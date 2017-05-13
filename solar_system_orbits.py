@@ -155,8 +155,8 @@ def computeOrbit (eclipticCoords, dateTime, basicOrbElems, extraOrbElems, period
 void raDecFromXyz (double [] raDec, double [] xyz) {
     double dist = mt.sqrt (xyz [0] * xyz [0] + xyz [1] * xyz [1] + xyz [2] * xyz [2]);
 
-    raDec [0] = ((12d/mt.PI) * mt.atan2 (xyz [1], xyz [0]) + 24d) % 24d;
-    raDec [1] = (180d/mt.PI) * mt.atan (xyz [2] / mt.sqrt (xyz [0] * xyz [0] + xyz [1] * xyz [1]));
+    raDec [0] = ((12/mt.PI) * mt.atan2 (xyz [1], xyz [0]) + 24) % 24;
+    raDec [1] = (180/mt.PI) * mt.atan (xyz [2] / mt.sqrt (xyz [0] * xyz [0] + xyz [1] * xyz [1]));
 
     '''
     print (
