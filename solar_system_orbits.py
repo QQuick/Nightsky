@@ -132,7 +132,7 @@ def computeOrbit (eclipticCoords, dateTime, basicOrbElems, extraOrbElems, period
         tol = 1e-6;
         del_E = 1e10
         while del_E > tol:
-            ddel_M = M - (E - e_star * mt.sin (radFromDeg (E)))
+            del_M = M - (E - e_star * mt.sin (radFromDeg (E)))
             del_E = del_M / (1d - e * mt.cos (radFromDeg (E)))
             E = E + del_E
 
