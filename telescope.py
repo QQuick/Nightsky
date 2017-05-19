@@ -2,90 +2,82 @@ import numscrypt as ns
 
 class Telescope:
     def __init__ (self):
-        pass
-        
-    def setParams (self,
+        '''Initialize constants
+        '''
     
-    def project (self, projectableVec3D, rField, rScreen):
-        '''Project scene upon screen
-        
-        Solar system radius of 1 m is mapped to image radius of 0.1 m.
-        Eye distance from screen is 0.555 m, sun distance from screen is 5 m.
-        Eye distance from sun (in origin) = 5.555 m = 10 * 0.555 m.
-        So original of 1 m maps to image of 1 m / 10 = 0.1 m .
-        0.1 m should be multiplied by 10 * rField to really fill half the screen.
-        '''
+        dirVec0Plane = ns.array ((1, 0, 0))
+        dirVec1Plane = ns.array ((0, 1, 0))
 
+    def zoom (self, zoomFactor = 40):
+        ''' Zoom by shifting image plane
         '''
-        Initializing the required vectors
-        '''
-
-        zoomShift = 40 / zoomFactor	# 1..40
-
-        dirVec0Plane = ns.array ((0, 1, 0))
-        dirVec1Plane = ns.array ((0, 0, 1))
-        
-        '''
-		supVecPlane = ns.array ((zoomShift / 2, 0, 0))
-		supVecPlane = ns.array ((zoomShift / 6, 0, 0))
-        '''
-        supVecPlane =  ns.array ((6 / (6 * 6), 0, 0))
-
-        '''
-		supVecLine = ns.array (((1 + zoomShift) / 2, 0, 0))
-		supVecLine = ns.array (((1 + zoomShift) / 6, 0, 0))
-        '''
-        supVecLine = ns.array (((1 + 6) / (6 * 6), 0, 0))
-
-        '''
-        Out through the backdoor if object behind eye
-        '''
-         
-        if projectableVec3D [0] > supVecLine [0]:
-            return None;
-        }
     
-        dirVecLine = projectableVec3D - supVecLine
- 
+        self.zoomFactor = zoomFactor
+        self.zoomShift = 40 / zoomFactor
+		self.supVecPlane = ns.array ((0, 0, -zoomShift / 6))
+        
+    def project (self, celestialBodyVec, rField, rScreen):
+        '''Project a celestial body onto the screen
+        
+                             y                    * celestial body
+                             |            *
+                           \ |  *
+                      *     \|
+        eye *        z - - - + - - -
+        (origin)             |\
+                             | \
+                             |  x
+                        image plane
+                        
+        Let vs be the vector from the origin to the celestial body.
+        Let vl be any vector that ends on the line through the origin and the celestial body.
+        Then vl = a vs
+        
+        Let vp be any vector that ends on the image plane
+        Let d the distance from the origin to the center of the image plane
+        Let ux, uy and uz be the unitvectors in directions x, y and z respectively
+        Then vp = b ux + c uy - d uz
+        
+        The star is shown on the image plane at the intersection with the line between eye and star.
+        At his intersection:
+        
+        a vs = b ux + c uy - d uz ==>
+        
+        d uz = a vs - b ux + - uy ==>
+        
+                 (vsx)     (-1)     ( 0)
+        d uz = a (vsy) + b ( 0) + c (-1)
+                 (vsz)     ( 0)     ( 0)
+        
+               (vsx, -1,  0) (a)
+        d uz = (vsy,  0, -1) (b) ==>
+               (vsz,  0,  0) (c)
+               
+                 (a)                           (vsx, -1,  0)
+        d uz = D (b) with direction matrix D = (vsy,  0, -1) ==>
+                 (c)                           (vsz,  0,  0)
+                 
+        (a)    -1
+        (b) = D  d uz
+        (c)
+        
+        The screen coordinates of the projected star are (a, b)
+        
         '''
-        Line between eye and celestial body:    lineVec == supVecLine + a * dirVecLine
-            
-        Imag plane:                             planeVec == supVecPlane + b * dirVec0Plane + c * dirVec1Plane
+        
+        # Bail out if object in front of image plane
+        
+        if projectableVec3D [2] < supVecPlane [2]:
+            return None   
 
-        Intersection:                           lineVec == planeVec  ==>
+        # Compute inverse of direction matrix D
         
-                                                supVecLine + a * dirVecLine == supVecPlane + b * dirVec0Plane + c * dirVec1Plane
-                                                
-                                                                                     (dirVecLine.T)
-                                                supVecPlane - supVecLine = (a, b, c) (-dirVec0Line.T)
-                                                                                     (-dirVec1Line.T)
-        '''
- 
-        '''
-        Compute direction matrix
-        '''
+        invDirMat = (dirVecLine * ns.array ((1, 0, 0)) .T + dirVec0Plane * ns.array ((-1, 0, 0)) .T  + dirVec1Plane * ns.array ((0, -1, 0)) .T) .I
         
-        dirMat = dirVecLine * ns.array ((1, 0, 0)) .T + dirVec0Plane * ns.array ((0, -1, 0)) .T  + dirVec1Plane * ns.array ((0, 0, -1)) .T + dirVecLine * ns.array ((1, 0, 0)) .T
+        # Compute projected 3D vector
         
-        # Invert direction matrix
-        
-        double [][] invMat = new double [3][3];
-        LinAlg.invert (invMat, dirMat);
-        
-        # Compute projection vector
-        
-        double [] supVecDif = new double [3];
-        LinAlg.subtract (supVecDif, supVecPlane, supVecLine);
-        
-        double [] dirCoefVec = new double [3];
-        LinAlg.mul (dirCoefVec, invMat, supVecDif);
-        
-        double [] termVecLine = new double [3];
-        LinAlg.mul (termVecLine, dirCoefVec [0], dirVecLine);
-        
-        double [] projectedVec3D = new double [3];
-        LinAlg.add (projectedVec3D, supVecLine, termVecLine);
-        
+        projectedCelestialBodyVec = invDirMat @ projectableVec
+                
         # rField in pixels / rScreen in m will map object with size of rScreen m exactly to rField pixels
         projectedVec2D = (
             (rField / (rScreen / 6d)) * projectedVec3D [1],

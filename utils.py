@@ -10,16 +10,25 @@ def colVec (*entries):
 def radFromDeg (degrees):
     '''Get radians from degrees
     '''
-    
     return (degrees / 180) * mt.pi
 
 def degFromRad (rad):
     '''Get degrees from radians
     '''
+    return (rad / mt.pi) * 180
+
+obliquity = radFromDeg (23.43928)
+_sinObliq = mt.sin (obliquity)
+_cosObliq = mt.cos (obliquity)
+def equatFromEclipt (xyz):
+    ''' Get equatorial coords from ecliptic coords
+    '''
+    return (
+        xyz [0],
+        cosObliq * xyz [1] - sinObliq * xyz [2],
+        sinObliq * xyz [1] + cosObliq * xyz [2]
+    )
     
-    return (rad / mt.pi) * 180;
-    
-        
 def raDecFromXyz (xyz):
     '''Get right ascension and declination from x y z coords
     '''

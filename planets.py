@@ -15,8 +15,7 @@ e.g. with slight variations in the orbit elements, for sensitivity analysis.
 class Planets:
     def __init__ (self):
         '''Initialize planet data like orbit elements, radius etc
-        '''
-        
+        ''' 
         self.allPlanetIndices = dict ([(planentName, planetIndex) for planetIndex, planetName in enumerate ('Mercury', 'Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune')])
 
         self._allBasicOrbElems = (
@@ -73,9 +72,7 @@ class Planets:
         self.allEquatorialPositions = [None for i in len (self.planetIndices)]
     
     def _computeEquatorialPositions (self, planetName, startDateTime, orbitSteps):
-        '''Compute complete orbit of one planet, parameters taken out of the planet data for that particular planet
-        
-        One complete closed orbit is computed.
+        '''Compute orbitSteps positions of the orbit of one planet, starting at startDateTime
         '''
         planetIndex = self.planetIndices [planetName]
         
@@ -142,12 +139,11 @@ class Planets:
             yAccent = a * mt.sqrt (1 - e * e) * mt.sin (ut.radFromDeg (E))
             zAccent = 0
             
-            eclipticOrbitPositions = []
+            equatialOrbitPositions = []
             
-            eclipticOrbitPositions.append  ((
+            equatorialOrbitPositions.append  (equatFromEclipt (
                 (mt.cos (radFromDeg (om)) * mt.cos (ut.radFromDeg (Om)) - mt.sin (ut.radFromDeg (om)) * mt.sin (ut.radFromDeg (Om)) * mt.cos (ut.radFromDeg (I))) * xAccent +
                 (-mt.sin (radFromDeg (om)) * mt.cos (ut.radFromDeg (Om)) - mt.cos (ut.radFromDeg (om)) * mt.sin (ut.radFromDeg (Om)) * mt.cos (ut.radFromDeg (I))) * yAccent,
-                
  
                 (mt.cos (radFromDeg (om)) * mt.sin (ut.radFromDeg (Om)) + mt.sin (ut.radFromDeg (om)) * mt.cos (ut.radFromDeg (Om)) * mt.cos (ut.radFromDeg (I))) * xAccent +
                 (-mt.sin (radFromDeg (om)) * mt.sin (ut.radFromDeg (Om)) + mt.cos (ut.radFromDeg (om)) * mt.cos (ut.radFromDeg (Om)) * mt.cos (ut.radFromDeg (I))) * yAccent,
@@ -156,24 +152,29 @@ class Planets:
                 mt.sin (ut.radFromDeg (om)) * mt.sin (ut.radFromDeg (I)) * xAcc +
                 mt.cos (ut.radFromDeg (om)) * mt.sin (ut.radFromDeg (I)) * yAcc
             ))
-            
-            equatorialOrbitCoords = []
                 
-        return equatorialOrbitCoords
+        return equatorialOrbitPositions
        
     def computeEquatorialOrbit (self, planetName, startDateTime):
+        '''Compute one complete orbit of a particular planet in small steps
+        '''
         planetIndex = self.planetIndices [planetName]
         self.allEquatorialOrbits [planetName] = computeEquatorialPositions (self, planetIndex, startDateTime, 180)
-    
-
+        
     def computeEquatorialOrbits (self, startDateTime):
+        '''Compute one complete orbit of all planets in small steps
+        '''
         for planetIndex in self.planetIndices.values ():
-            self.computeEquatorialPositions (self, planetIndex, startDateTime)
+            self.computeEquatorialOrbit (self, planetIndex, startDateTime)
 
-    def computeEquatorialPosition (self, planetName, startDateTime):
+    def computeEquatorialPosition (self, planetName, dateTime):
+        '''Compute one position of a particular planet
+        '''
         planetIndex = self.planetIndices [planetName]
         self.allEquatorialPositions [planetIndex] = computeEquatorialPositions (self, planentIndex, startDateTime, 1) [0]
 
-    def computeEquatorialPositions (self, startDateTime):
+    def computeEquatorialPositions (self, dateTime):
+        '''Compute one position of each planet
+        '''
         for planetIndex in self.planetIndices.values ():
             self.computeEquatorialPosition (planetIndex)
