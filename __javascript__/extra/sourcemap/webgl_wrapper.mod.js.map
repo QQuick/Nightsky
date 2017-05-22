@@ -1,0 +1,11 @@
+{
+	"version": 3,
+	"file": "D:/activ_tosh/geatec/Nightsky/__javascript__/webgl_wrapper.mod.js",
+	"sources": [
+		"D:/activ_tosh/geatec/Nightsky/webgl_wrapper.py"
+	],
+	"sourcesContent": [
+		"class Canvas:\n    def __init__ (self, parentId):\n        self.parentId = parentId\n        self.parent = document.getElementById (self.parentId)\n    \n        self.canvas = document.createElement ('canvas')\n        self.parent.appendChild (self.canvas)\n        \n        # Make canvas fit parent\n        self.canvas.style.width = '100%'\n        self.canvas.style.height = '100%'\n        \n        # Adapt internal width in pixels\n        self.canvas.width  = self.canvas.offsetWidth\n        self.canvas.height = self.canvas.offsetHeight\n        \n        self.context = self.canvas.getContext ('webgl2')\n        self.context.clearColor (0, 0, 0, 1)\n        self.context.viewport (0, 0, self.canvas.width, self.canvas.height)\n        self.context.js_clear (self.context.COLOR_BUFFER_BIT | self.context.DEPTH_BUFFER_BIT)\n        \n    def drawTestImage (self):\n        pass\n        \n\n        "
+	],
+	"mappings": "AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AACA;AACA;AACA;AAEA;AACA;AAGA;AACA;AAGA;AACA;AAEA;AACA;AACA;AACA;AAAA;AAEA;AACA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA"
+}

@@ -84,8 +84,7 @@ class Telescope:
             (rField / (rScreen / 6d)) * projectedVec3D [2]
         )
         
-        return true;
-    }
+        return true
             
         boolean map (double [] mappedVec2D, double [] mappableVec3D, double rField, double rScreen) {	
             double [] rotAngVec = new double [] {Math.PI / 180d * tilt, Math.PI/180d * course, 0d};

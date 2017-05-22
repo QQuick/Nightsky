@@ -1,0 +1,11 @@
+{
+	"version": 3,
+	"file": "D:/activ_tosh/geatec/Nightsky/__javascript__/nightsky.mod.js",
+	"sources": [
+		"D:/activ_tosh/geatec/Nightsky/nightsky.py"
+	],
+	"sourcesContent": [
+		"import webgl_wrapper as ww\n\ncanvas = None\n\ndef run (parentId):\n    global canvas\n    canvas = ww.Canvas (parentId)\n"
+	],
+	"mappings": "AAAA;AAAA;AAEA;AAEA;AAEA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA"
+}
